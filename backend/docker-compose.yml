@@ -1,0 +1,29 @@
+version: "3.6"
+services:
+  postgres:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: food_recipes_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  hasura:
+    image: hasura/graphql-engine:v2.48.1
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:admin@postgres:5432/food_recipes_db
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ADMIN_SECRET: admin123
+
+volumes:
+  db_data:
